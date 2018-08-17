@@ -42,7 +42,9 @@ function start() {
         for (var i = 0; i < res.length; i++) {
             console.log("PRODUCT ID: " + res[i].item_id + "\r\n" + "PRODUCT NAME: " + res[i].product_name + "\r\n" + "PRICE: " + res[i].price + "\r\n" + "ITEMS IN STOCK: " + res[i].stock_quantity + "\n");
             console.log("************")
+
         }
+        console.log("Press ⬇ to contiue.")
     });
     shopping();
 }
@@ -75,26 +77,53 @@ function shopping() {
             }
         }
     ]).then(function (input) {
-        var item = input.item_id;
-        var quantity = input.quantity;
-        // console.log("You have selcted " + "[" + quantity + "]" + " " + item + "(s)");
+            var item = input.item_id;
+            var quantity = input.quantity;
+            // console.log("You have selcted " + "[" + quantity + "]" + " " + item + "(s)");
+            var query = 'SELECT * FROM products WHERE ?';
 
-        connection.query('SELECT * FROM products', function (err, res) {
-            if (err) throw err;
-    
-            console.log(res[1]);
-            // if(quantity < res[(item - 1)].stock_quantity){
-            //     console.log("Insufficient quantity!");
-            // }
-            // else{
-            //     console.log("Purchase successful!");
-            // }
-            // for (var i = 0; i < res.length; i++) {
-            //     console.log("PRODUCT ID: " + res[i].item_id + "\r\n" + "PRODUCT NAME: " + res[i].product_name + "\r\n" + "PRICE: " + res[i].price + "\r\n" + "ITEMS IN STOCK: " + res[i].stock_quantity + "\n");
-            //     console.log("************")
-            // }
-        });
-    })
+            connection.query(query, {
+                    item_id: item
+                }, function (err, res) {
+                    if (err) throw err;
+                    if (res.length === 0) {
+                        console.log("Sorry! We couldn't find that item. Try again.");
+                        shopping();
+                    } else {
+                        var productInfo = res[0];
+                        console.log("\n" + "We have " + productInfo.stock_quantity + " in stock" + "\r\n");
+                        console.log("You have requested " + quantity + " units of " + "item " + item);
 
+                        if (quantity <= productInfo.stock_quantity) {
+                            console.log("\n" + "This item is in stock!");
 
-}
+                            var updateQuery = 'UPDATE products SET stock_quantity = ' + (productInfo.stock_quantity - quantity) + ' WHERE item_id = ' + item;
+                            connection.query(updateQuery, function (err, res) {
+                                if (err) throw err;
+                                console.log("\r\n" + "Your order has been placed! Your total is  " + productInfo.price * quantity);
+                                console.log("Updated stock: " + productInfo.stock_quantity);
+                            })
+
+                            inquirer
+                                .prompt({
+                                    name: "second_prompt",
+                                    type: "rawlist",
+                                    message: "Would you like to view our store again?",
+                                    choices: ["Y", "N"]
+                                }).then(function (answer) {
+                                    if (answer.second_prompt.toUpperCase() === "Y") {
+                                        start();
+                                    } else {
+                                        connection.end();
+                                    }
+                                });
+                        } else {
+                            console.log("Not enough in stock!");
+                            start();
+                        }         
+                    }
+                  })
+                })
+            }
+
+    greeting();
