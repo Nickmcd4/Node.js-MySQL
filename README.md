@@ -1,9 +1,9 @@
-# Node.js-MySQL #
+# Node.js-MySQL 
 ________________________________________________________________________________________________
-
+#OVERVIEW
 Amazon-like storefront ustlizing MySQL . The app takes in orders from customers and depletes stock from the store's inventory. Additionally, the app tracks product sales across the store's departments and then provides a summary of the highest-grossing departments in the store.
 
-#USAGE#
+**USAGE**
 **********************************************
 
 The app will prompt users with two messages.
@@ -28,3 +28,7 @@ However, if your store does have enough of the product,  it will fulfill the cus
 
 This means updating the SQL database to reflect the remaining quantity.
 Once the update goes through, the customer will be shown the total cost of their purchase.
+
+**EXAMPLE**
+
+![gif_example](images/walkthrough.GIF)
