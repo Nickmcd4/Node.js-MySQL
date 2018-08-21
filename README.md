@@ -32,3 +32,5 @@ Once the update goes through, the customer will be shown the total cost of their
 **EXAMPLE**
 
 ![gif_example](images/walkthrough.gif)
+
+![gif_example](images/walkthrough2.gif)
